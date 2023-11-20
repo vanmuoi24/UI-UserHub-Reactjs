@@ -16,6 +16,8 @@ import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@mui/material/CircularProgress";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 function Copyright(props) {
   return (
@@ -34,7 +36,6 @@ function Copyright(props) {
     </Typography>
   );
 }
-
 function Login() {
   var naver = useNavigate();
   const [loading, setloading] = useState(true);
@@ -43,11 +44,22 @@ function Login() {
       setloading(false);
     }, 2000);
   }, []);
+  const alidationSchess = yup.object().shape({
+    email: yup
+      .string()
+      .email("Email không hợp lệ")
+      .required("Vui lòng nhập email"),
+    password: yup
+      .string()
+      .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+      .max(20, "Mật khẩu không được vượt quá 20 ký tự")
+      .required("Vui lòng nhập đầy đủ password"),
+  });
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: "onChange", resolver: yupResolver(alidationSchess) });
   const handledata = (data) => {
     var data_register = JSON.parse(localStorage.getItem("data"));
     if (
@@ -139,6 +151,9 @@ function Login() {
                       sx={{ fontSize: "12px", marginTop: "7px" }}
                       color="tomato"
                     ></Typography>
+                    <Typography sx={{ color: "red" }}>
+                      {errors?.email?.message}
+                    </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
@@ -153,6 +168,9 @@ function Login() {
                       sx={{ fontSize: "12px", marginTop: "7px" }}
                       color="tomato"
                     ></Typography>
+                    <Typography sx={{ color: "red" }}>
+                      {errors?.password?.message}
+                    </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <FormControlLabel

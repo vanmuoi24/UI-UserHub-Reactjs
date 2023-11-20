@@ -16,6 +16,8 @@ import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@mui/material/CircularProgress";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 function Copyright(props) {
   return (
     <Typography
@@ -42,11 +44,21 @@ function Register() {
       setloading(false);
     }, 3000);
   }, []);
+
+  const alidationSchess = yup.object().shape({
+    firstName: yup.string().min(2).max(7).required(),
+    lastName: yup.string().min(2).max(7).required(),
+    email: yup.string().email().required(),
+    password: yup.string().min(8).max(20).required(),
+  });
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(alidationSchess),
+  });
   const handledata = (data) => {
     localStorage.setItem("data", JSON.stringify(data));
     toast.success("redister SuccessFullly !", {
@@ -120,6 +132,9 @@ function Register() {
                       id="firstName"
                       label="First Name"
                     />
+                    <Typography sx={{ color: "red" }}>
+                      {errors?.firstName?.message}
+                    </Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -129,6 +144,9 @@ function Register() {
                       label="LastName"
                       name="lastName"
                     />
+                    <Typography sx={{ color: "red" }}>
+                      {errors?.lastName?.message}
+                    </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
@@ -138,6 +156,9 @@ function Register() {
                       label="Email Address"
                       name="email"
                     />
+                    <Typography sx={{ color: "red" }}>
+                      {errors?.email?.message}
+                    </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
@@ -148,6 +169,9 @@ function Register() {
                       type="password"
                       id="password"
                     />
+                    <Typography sx={{ color: "red" }}>
+                      {errors?.password?.message}
+                    </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <FormControlLabel
